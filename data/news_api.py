@@ -22,6 +22,17 @@ def get_news():
                  for item in news]
         }
     )
+@blueprint.route('/api/jobs')
+def get_news():
+    db_sess = db_session.create_session()
+    jobs = db_sess.query(Jobs).all()
+    return jsonify(
+        {
+            'news':
+                [item.to_dict(only=('title', 'content', 'user.name'))
+                 for item in jobs]
+        }
+    )
 @blueprint.route('/api/news/<int:news_id>', methods=['GET'])
 def get_one_news(news_id):
     db_sess = db_session.create_session()
