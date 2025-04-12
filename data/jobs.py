@@ -8,7 +8,7 @@ from flask_restful import abort
 from . import db_session
 
 
-class Jobs(SqlAlchemyBase):
+class Jobs(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'jobs'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -20,4 +20,9 @@ class Jobs(SqlAlchemyBase):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     end_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-    is_finished = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    is_finished = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    def abort_if_news_not_found(jobs_id):
+        session = db_session.create_session()
+        news = session.query(Jobs).get(jobs_id)
+        if not news:
+            abort(404, message=f"News {jobs_id} not found")
